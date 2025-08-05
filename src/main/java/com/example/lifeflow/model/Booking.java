@@ -1,21 +1,36 @@
 package com.example.lifeflow.model;
 
-public class Booking {
-    private int id;
-    private int eventId;
-    private String userName;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 
-    public Booking(int id, int eventId, String userName) {
-        this.id = id;
-        this.eventId = eventId;
-        this.userName = userName;
+@Entity
+public class Booking {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String user;
+    private int seats;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    @JsonBackReference
+    private Event event;
+
+    public Booking() {}
+
+    public Booking(String user, int seats) {
+        this.user = user;
+        this.seats = seats;
     }
 
-    public int getId() { return id; }
-    public int getEventId() { return eventId; }
-    public String getUserName() { return userName; }
-
-    public void setId(int id) { this.id = id; }
-    public void setEventId(int eventId) { this.eventId = eventId; }
-    public void setUserName(String userName) { this.userName = userName; }
+    // Getter & Setter
+    public Long getId() { return id; }
+    public String getUser() { return user; }
+    public void setUser(String user) { this.user = user; }
+    public int getSeats() { return seats; }
+    public void setSeats(int seats) { this.seats = seats; }
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) { this.event = event; }
 }

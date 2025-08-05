@@ -1,28 +1,32 @@
 package com.example.lifeflow.controller;
 
 import com.example.lifeflow.model.Booking;
+import com.example.lifeflow.repository.BookingRepository;
+
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/bookings")
 public class BookingController {
 
-    private List<Booking> bookings = new ArrayList<>(Arrays.asList(
-            new Booking(1, 1, "Gafora"),
-            new Booking(2, 2, "Hamoudi")
-    ));
+    private final BookingRepository bookingRepository;
 
-    // GET: alle Buchungen
-    @GetMapping
-    public List<Booking> getAllBookings() {
-        return bookings;
+    // ✅ Constructor Injection statt @Autowired am Feld
+    public BookingController(BookingRepository bookingRepository) {
+        this.bookingRepository = bookingRepository;
     }
 
-    // POST: neue Buchung
+    // GET: Alle Bookings abrufen
+    @GetMapping
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
+    // POST: Neues Booking speichern
     @PostMapping
     public Booking addBooking(@RequestBody Booking newBooking) {
-        bookings.add(newBooking);
-        return newBooking;
+        return bookingRepository.save(newBooking);
     }
 }

@@ -1,29 +1,39 @@
 package com.example.lifeflow.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import java.util.ArrayList;
-import java.util.*;
+import java.util.List;
 
+@Entity
+@Table(name = "groups")
 public class Group {
-    private int id;   //Anzahl der Mitglieder der Group
-    private String name;   //Name der Veranstalltung oder Unternehmung
-    private List<String> members = new ArrayList<>();   //Liste der Mitglieder [Ali, Hamoudi, Gafoura]
-    private List<Vote> votes = new ArrayList<>();     // Liste von Abstimmungen (siehe Vote.java)
 
-    public Group(int id, String name) {
-        this.id = id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Vote> votes = new ArrayList<>();
+
+    public Group() {}
+
+    public Group(String name) {
         this.name = name;
-    }
-
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public List<String> getMembers() { return members; }
-    public List<Vote> getVotes() { return votes; }
-
-    public void addMember(String member) {
-        members.add(member);
     }
 
     public void addVote(Vote vote) {
         votes.add(vote);
+        vote.setGroup(this);
     }
+
+    // Getter & Setter
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public List<Vote> getVotes() { return votes; }
+    public void setVotes(List<Vote> votes) { this.votes = votes; }
 }
