@@ -1,8 +1,7 @@
 package com.example.lifeflow.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,30 +12,50 @@ public class Event {
     private Long id;
 
     private String name;
-    private String time;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Booking> bookings = new ArrayList<>();
+    private String eventTime;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @JsonIgnore  // verhindert auch hier die Endlosschleife
+    private List<Booking> bookings;
 
     public Event() {}
 
-    public Event(String name, String time) {
+    public Event(String name, String eventTime) {
         this.name = name;
-        this.time = time;
-    }
-
-    public void addBooking(Booking booking) {
-        bookings.add(booking);
-        booking.setEvent(this);
+        this.eventTime = eventTime;
     }
 
     // Getter & Setter
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getTime() { return time; }
-    public void setTime(String time) { this.time = time; }
-    public List<Booking> getBookings() { return bookings; }
-    public void setBookings(List<Booking> bookings) { this.bookings = bookings; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(String eventTime) {
+        this.eventTime = eventTime;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
 }

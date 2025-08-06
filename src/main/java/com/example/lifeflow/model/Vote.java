@@ -1,37 +1,30 @@
 package com.example.lifeflow.model;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "votes")
 public class Vote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String member;
-    private String choice;
+    private String voter;
+    private boolean choice;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    @JsonBackReference
-    private Group group;
+    @JoinColumn(name = "group_id", nullable = false)
+    private GroupEntity group;
 
-    public Vote() {}
-
-    public Vote(String member, String choice) {
-        this.member = member;
-        this.choice = choice;
-    }
-
-    // Getter & Setter
+    // Getter/Setter
     public Long getId() { return id; }
-    public String getMember() { return member; }
-    public void setMember(String member) { this.member = member; }
-    public String getChoice() { return choice; }
-    public void setChoice(String choice) { this.choice = choice; }
-    public Group getGroup() { return group; }
-    public void setGroup(Group group) { this.group = group; }
+    public String getVoter() { return voter; }
+    public void setVoter(String voter) { this.voter = voter; }
+    public boolean isChoice() { return choice; }
+    public void setChoice(boolean choice) { this.choice = choice; }
+    public GroupEntity getGroup() { return group; }
+    public void setGroup(GroupEntity group) { this.group = group; }
 }
