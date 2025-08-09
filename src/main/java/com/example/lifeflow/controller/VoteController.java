@@ -1,11 +1,14 @@
 package com.example.lifeflow.controller;
 
-import com.example.lifeflow.model.Vote;
+import com.example.lifeflow.dto.vote.VoteCreateRequest;
+import com.example.lifeflow.dto.vote.VoteResponse;
 import com.example.lifeflow.model.GroupEntity;
-import com.example.lifeflow.repository.VoteRepository;
+import com.example.lifeflow.model.Vote;
+import com.example.lifeflow.error.ResourceNotFoundException;
 import com.example.lifeflow.repository.GroupRepository;
-
-
+import com.example.lifeflow.repository.VoteRepository;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/votes")
 public class VoteController {
-
     private final VoteRepository voteRepository;
     private final GroupRepository groupRepository;
 
@@ -23,14 +25,24 @@ public class VoteController {
     }
 
     @PostMapping
-    public Vote createVote(@RequestBody Vote vote) {
-        GroupEntity group = groupRepository.findById(vote.getGroup().getId()).orElseThrow();
-        vote.setGroup(group);
-        return voteRepository.save(vote);
+    @ResponseStatus(HttpStatus.CREATED)
+    public VoteResponse create(@Valid @RequestBody VoteCreateRequest req) {
+        GroupEntity group = groupRepository.findById(req.getGroupId())
+                .orElseThrow(() -> new ResourceNotFoundException("Group not found: id=" + req.getGroupId()));
+
+        Vote v = new Vote();
+        v.setVoter(req.getVoter());
+        v.setChoice(req.getChoice());
+        v.setGroup(group);
+
+        Vote saved = voteRepository.save(v);
+        return new VoteResponse(saved.getId(), saved.getVoter(), saved.getChoice(), saved.getGroup().getId());
     }
 
     @GetMapping
-    public List<Vote> getAllVotes() {
-        return voteRepository.findAll();
+    public List<VoteResponse> list() {
+        return voteRepository.findAll().stream()
+                .map(v -> new VoteResponse(v.getId(), v.getVoter(), v.getChoice(), v.getGroup().getId()))
+                .toList();
     }
-    }
+}
